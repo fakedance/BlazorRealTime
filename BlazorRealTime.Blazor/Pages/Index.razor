@@ -1,0 +1,42 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+
+
+<h1>Welcome! SignalR</h1>
+<hr />
+<button class="btn btn-success" @onclick="@ConnectToServer" disabled="@isConnected">Connect</button>
+<h3>Connection Status : @ConnectionStatus</h3>
+<div class="row">
+    <div class="col-4">
+
+    </div>
+</div>
+
+@code{
+    string url = "http://localhost:56029/notificationhub";
+    HubConnection _connection = null;
+
+    string ConnectionStatus = "Closed";
+    bool isConnected = false;
+
+    private async Task ConnectToServer()
+    {
+        _connection = new HubConnectionBuilder()
+            .WithUrl(url).Build();
+
+        await _connection.StartAsync();
+        isConnected = true;
+        ConnectionStatus = "Connected :-)";
+
+        _connection.Closed += async (s) =>
+        {
+            isConnected = false;
+            ConnectionStatus = "Closed";
+            await _connection.StartAsync();
+            isConnected = true;
+        };
+
+
+    }
+
+}
